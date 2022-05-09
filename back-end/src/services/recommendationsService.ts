@@ -1,10 +1,16 @@
 import { Recommendation } from "@prisma/client";
 import { recommendationRepository } from "../repositories/recommendationRepository.js";
-import { notFoundError } from "../utils/errorUtils.js";
+import { conflictError,notFoundError } from "../utils/errorUtils.js";
 
 export type CreateRecommendationData = Omit<Recommendation, "id" | "score">;
 
 async function insert(createRecommendationData: CreateRecommendationData) {
+  const existingRecommendation = await recommendationRepository.findByName(
+    createRecommendationData.name
+  );
+  if (existingRecommendation)
+    throw conflictError("Recommendations names must be unique");
+
   await recommendationRepository.create(createRecommendationData);
 }
 
@@ -85,4 +91,6 @@ export const recommendationService = {
   getById,
   getTop,
   truncate,
+  getByScore,
+  getScoreFilter,
 };

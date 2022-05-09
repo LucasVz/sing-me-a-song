@@ -102,6 +102,17 @@ describe("POST /recommendations", () =>{
         expect(response.status).toEqual(201);
 
     });
+
+    it("shouold return status 422 if invalid recommendation", async() =>{
+        const recommendation= {
+            name: "",
+            youtubeLink: "",
+        }
+
+        const response = await supertest(app).post(`/recommendations`).send(recommendation);
+
+        expect(response.status).toEqual(422);
+    });
 });
 
 describe("POST /upvote", () =>{
